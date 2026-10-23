@@ -1,0 +1,210 @@
+---
+title: "lab04_Practice"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Hypothesis
+
+H1: Points allocated to a partner's physical attractiveness differ by sex at birth.
+
+H2: Confidence in finding a new partner is associated with relationship commitment.
+
+```{r load package}
+library(ggplot2)
+library(ggrain)
+```
+
+## Load the processed data
+
+```{r loadData}
+#load processed data
+h1Data <- read.csv("data/processed_data/practice_h1.csv")
+h2Data <- read.csv("data/processed_data/practice_h2.csv")
+
+#reorganize categorical variable
+h1Data$Sex_birth <- factor(h1Data$Sex_birth,
+                           levels=c("Male","Female","Intersex"))
+
+```
+
+## H1 - Box Plot
+
+```{r H1Box}
+#Box plot
+#The line is the median; the box covers the middle 50% of responses (Q1-Q3).
+#Whiskers reach the most extreme observations within 1.5 IQR of the box edges.
+#Points beyond the whiskers are not necessarily errors.
+h1Box <- ggplot(data=h1Data,
+                aes(x=Sex_birth,
+                    y=preference_imp_physat,
+                    fill=Sex_birth)) +
+  geom_boxplot()+
+  labs(x="Sex assigned at birth",
+       y="Points allocated to partner attractiveness",
+       fill="Sex at birth",
+       title="Allocation to partner attractiveness by sex")+
+  theme_gray(base_size=15)
+
+h1Box
+
+```
+
+## H1 - Violin Plot (with Box Plot)
+
+```{r H1Violin}
+#Violin Plot
+#Wider sections show where responses are more concentrated within each group.
+#The shape depends on smoothing; integer scores can create bumps.
+#Violin width does not show group sample size. The box adds the median and IQR.
+h1Viol <- ggplot(data=h1Data,
+                 aes(x=Sex_birth,
+                    y=preference_imp_physat,
+                    fill=Sex_birth))+
+  geom_violin()+
+  geom_boxplot(width=.12)+
+labs(x="Sex assigned at birth",
+       y="Points allocated to partner attractiveness",
+       fill="Sex at birth",
+       title="Allocation to partner attractiveness by sex")+
+  theme_gray(base_size=15)
+
+h1Viol
+
+```
+
+## H1 - Raincloud Plot
+
+```{r H1Raincloud}
+#Raincloud Plot
+#A raincloud combines a half-violin, a box plot, and individual responses.
+#Jitter separates overlapping points without changing the recorded values.
+#With many responses, points can still overlap heavily.
+h1Rain <- ggplot(data=h1Data,
+                 aes(x=Sex_birth,
+                    y=preference_imp_physat,
+                    fill=Sex_birth))+
+  geom_rain(alpha = .5)+
+  labs(x="Sex assigned at birth",
+       y="Points allocated to partner attractiveness",
+       fill="Sex at birth",
+       title="Allocation to partner attractiveness by sex")+
+  theme_gray(base_size=15)
+
+h1Rain
+  
+```
+
+## H2 - Scatter Plots
+
+```{r H2Scatter}
+#Scatter Plot
+h2Points <- ggplot(data=h2Data,
+                    aes(x=qoa,
+                        y=commitment))+
+  geom_point()+
+  labs(x="Confidence in finding a new partner",
+       y="Relationship commitment",
+       title="Confidence in finding a new partner and commitment")+
+  theme_gray(base_size = 18)
+
+h2Points
+
+#Plot looks weird... why?
+nrow(h2Data)
+nrow(unique(h2Data[,c("qoa","commitment")]))
+
+#Jitter
+h2Jitter <- ggplot(
+  data=h2Data,
+                    aes(x=qoa,
+                        y=commitment))+
+    geom_jitter(width = .12,height=.04,alpha=.04,size = .6)+
+    labs(x="Confidence in finding a new partner",
+       y="Relationship commitment",
+       title="Confidence in finding a new partner and commitment")+
+  theme_gray(base_size = 18)
+
+
+h2Jitter
+
+```
+
+## H2 - Smooth Line
+
+```{r}
+#Scatter Plot with line
+h2Line <- h2Jitter + geom_smooth(method="lm")
+
+h2Line
+
+```
+
+## Other graphs - Cheat sheet (TA only)
+
+### Mean bar graph with confidence intervals
+
+Based on Prediction 1.1 in the course cheat script. Use this to compare group
+means; the bars do not show the distribution of individual responses.
+
+```{r meanBar}
+#Bar height shows the mean; error bars show bootstrap 95% confidence intervals.
+#mean_cl_boot requires Hmisc; install it once in the Console if needed.
+#These intervals resample individuals and do not account for clustering by country.
+set.seed(221)
+
+h1Mean <- ggplot(data=h1Data,
+                 aes(x=Sex_birth,
+                     y=preference_imp_physat,
+                     fill=Sex_birth))+
+  stat_summary(fun="mean",geom="bar")+
+  stat_summary(fun.data="mean_cl_boot",geom="errorbar",width=.15)+
+  labs(x="Sex assigned at birth",
+       y="Mean points allocated to partner attractiveness",
+       fill="Sex at birth")
+
+h1Mean
+```
+
+### Count bar graph
+
+An additional example. Use this to check how many respondents are in each
+category, rather than comparing their mean scores.
+
+```{r countBar}
+#geom_bar counts rows in each category; no y variable is needed.
+h1Count <- ggplot(data=h1Data,
+                  aes(x=Sex_birth,fill=Sex_birth))+
+  geom_bar()+
+  labs(x="Sex assigned at birth",
+       y="Number of respondents",
+       fill="Sex at birth")
+
+h1Count
+```
+
+### Histogram
+
+An additional example. Use this to inspect the distribution of one numeric
+variable. Unlike a violin, it displays counts in bins without smoothing.
+
+```{r histogram}
+#binwidth=1 creates one-point intervals; center=0 centers bins on whole numbers.
+#Changing the bin width changes the detail visible in the distribution.
+h1Hist <- ggplot(data=h1Data,aes(x=preference_imp_physat))+
+  geom_histogram(binwidth=1,center=0,color="white")+
+  labs(x="Points allocated to partner attractiveness",
+       y="Number of respondents")
+
+h1Hist
+
+#Show each group in its own panel using the same axes.
+#These are counts, so larger groups will have taller bars.
+h1Hist + facet_wrap(~Sex_birth)
+```
+

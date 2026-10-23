@@ -1,0 +1,88 @@
+---
+title: "lab04_Practice"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Hypothesis
+
+H1: Points allocated to a partner's physical attractiveness differ by sex at birth.
+
+H2: Confidence in finding a new partner is associated with relationship commitment.
+
+```{r load package}
+
+
+```
+
+## Load the processed data
+
+```{r loadData}
+#load processed data
+
+
+#reorganize categorical variable
+
+
+```
+
+## H1 - Box Plot
+
+```{r H1Box}
+#Box plot
+#The line is the median; the box covers the middle 50% of responses (Q1-Q3).
+#Whiskers reach the most extreme observations within 1.5 IQR of the box edges.
+
+
+
+```
+
+## H1 - Violin Plot (with Box Plot)
+
+```{r H1Violin}
+#Violin Plot
+#Wider sections show where responses are more concentrated within each group.
+#The shape depends on smoothing; integer scores can create bumps.
+
+
+```
+
+## H1 - Raincloud Plot
+
+```{r H1Raincloud}
+#Raincloud Plot
+#A raincloud combines a half-violin, a box plot, and individual responses.
+
+  
+```
+
+## H2 - Scatter Plots
+
+```{r H2Scatter}
+#Scatter Plot
+
+
+#Plot looks weird... why?
+
+
+#Jitter
+
+
+
+
+
+```
+
+## H2 - Smooth Line
+
+```{r}
+#Scatter Plot with line
+
+
+```
+
