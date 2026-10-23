@@ -69,7 +69,7 @@ table(data$cot_politics,useNA="ifany")
 #turn cot_politics into a factor with labels FarLeft, CenterLeft, Center, CenterRight, FarRight
 data$cot_politics <- factor(data$cot_politics,
                             levels= c(1,2,3,4,5),
-                            labels= c("FarLeft","CenterLeft","Center","CenterRight","FarRight"))
+                            labels= c("Far Left","Center Left","Center","Center Right","Far Right"))
 
 table(data$cot_politics,useNA="ifany")
 
@@ -202,15 +202,14 @@ str(h1data)
 head(h1data)
 colSums(is.na(h1data))
 table(h1data$cot_politics,useNA="ifany")
-range(h1data$genderviews)
+range(h1data$viewtotal)
 sum(duplicated(h1data$ResponseId))
 
-#FINISH THIS PART!!!!!!!!!!!!!!!
+#do the same for h2 data
 dim(h2data)
 str(h2data)
 head(h2data)
 colSums(is.na(h2data))
-range(h2data$attractotal)
 range(h2data$Time_social_media_1)
 sum(duplicated(h2data$ResponseId))
 ```
@@ -224,18 +223,18 @@ display the formatted codebooks.
 ```{r variable_labels} 
 #add a description to each h1Data column, in column order
 #include the source codes, meaning, and units
-var_label(h1Data) <- c(
+var_label(h1data) <- c(
   "Unique participant ID (ResponseId)",
-  "Sex at birth: original codes 0=Male, 1=Female, 2=Intersex; now stored as a factor",
-  "Points allocated to partner physical attractiveness; 0-30 points from a 30-point budget; zero is valid"
+  "Political Alignment: original codes 1=Far Left, 2= Center Left, 3=Center, 4=Center Right, 5=Far Right; now stored as a factor",
+  "Composite score of views on gender equality, higher score corresponds to more traditional gender roles"
 )
 
 #add a description to each h2Data column, in column order
 #include response anchors and the commitment scoring rule
-var_label(h2Data) <- c(
+var_label(h2data) <- c(
   "Unique participant ID (ResponseId)",
-  "Confidence in finding another appealing partner if the current relationship ended; 1=Strongly disagree, 7=Strongly agree",
-  "Relationship commitment: mean of available prqc_4-6 responses, each 1=Not at all to 7=Extremely; no reverse coding; at least one valid response required"
+  "Average daily time spent using social media measured in minutes",
+  "Importance placed on looking attractive, composite score"
 )
 
 ```
@@ -246,7 +245,7 @@ generated table are internal R positions, not the original survey codes.
 
 ```{r h1_codebook}
 #generate the h1Data codebook
-compact_codebook(h1Data)
+compact_codebook(h1data)
 
 ```
 
@@ -255,7 +254,7 @@ valid nonmissing qoa and at least one valid commitment response.
 
 ```{r h2_codebook}
 #generate the h2Data codebook
-compact_codebook(h2Data)
+compact_codebook(h2data)
 
 ```
 
@@ -266,8 +265,8 @@ compact_codebook(h2Data)
 dir.create("data/processed_data",recursive=T,showWarnings=F)
 
 #save h1Data and h2Data without an extra row-number column
-write.csv(h1Data,"data/processed_data/221A_h1.csv",row.names=F)
-write.csv(h2Data,"data/processed_data/221A_h2.csv",row.names=F)
+write.csv(h1data,"data/processed_data/221A_h1.csv",row.names=F)
+write.csv(h2data,"data/processed_data/221A_h2.csv",row.names=F)
 
 #read the files back and confirm their dimensions
 h1Saved <- read.csv("data/processed_data/221A_h1.csv")
