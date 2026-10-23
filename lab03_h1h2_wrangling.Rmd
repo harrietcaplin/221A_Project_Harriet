@@ -192,7 +192,6 @@ h2data <- na.omit(h2data)
 ```
 
 
-
 ## 8. Check the final tables
 
 ```{r final_tables}
@@ -211,8 +210,8 @@ dim(h2data)
 str(h2data)
 head(h2data)
 colSums(is.na(h2data))
-range(h2data$qoa)
-range(h2data$commitment)
+range(h2data$attractotal)
+range(h2data$Time_social_media_1)
 sum(duplicated(h2data$ResponseId))
 ```
 
@@ -222,7 +221,7 @@ The descriptions come from the original codebook and our scoring decisions.
 `compact_codebook()` adds summaries from the actual data. Knit the Rmd to
 display the formatted codebooks.
 
-```{r variable_labels}
+```{r variable_labels} 
 #add a description to each h1Data column, in column order
 #include the source codes, meaning, and units
 var_label(h1Data) <- c(
@@ -267,12 +266,12 @@ compact_codebook(h2Data)
 dir.create("data/processed_data",recursive=T,showWarnings=F)
 
 #save h1Data and h2Data without an extra row-number column
-write.csv(h1Data,"data/processed_data/practice_h1.csv",row.names=F)
-write.csv(h2Data,"data/processed_data/practice_h2.csv",row.names=F)
+write.csv(h1Data,"data/processed_data/221A_h1.csv",row.names=F)
+write.csv(h2Data,"data/processed_data/221A_h2.csv",row.names=F)
 
 #read the files back and confirm their dimensions
-h1Saved <- read.csv("data/processed_data/practice_h1.csv")
-h2Saved <- read.csv("data/processed_data/practice_h2.csv")
+h1Saved <- read.csv("data/processed_data/221A_h1.csv")
+h2Saved <- read.csv("data/processed_data/221A_h2.csv")
 dim(h1Saved)
 dim(h2Saved)
 
