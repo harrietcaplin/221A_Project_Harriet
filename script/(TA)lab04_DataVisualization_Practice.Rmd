@@ -145,6 +145,16 @@ h2Line
 
 ```
 
+## Save figures
+
+```{r saveFigures}
+#Run after creating the plots. Save PNG files in the project's figures folder.
+dir.create("figures",showWarnings=FALSE)
+ggsave("figures/h1_raincloud.png",plot=h1Rain,width=10,height=6,dpi=300)
+ggsave("figures/h2_scatter.png",plot=h2Line,width=10,height=6,dpi=300)
+#To save another plot, change the filename and plot object (e.g., h1Viol or h1Rain).
+```
+
 ## Other graphs - Cheat sheet (TA only)
 
 ### Mean bar graph with confidence intervals

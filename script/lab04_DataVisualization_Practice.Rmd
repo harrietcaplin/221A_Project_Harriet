@@ -86,3 +86,10 @@ H2: Confidence in finding a new partner is associated with relationship commitme
 
 ```
 
+## Save figures
+
+```{r saveFigures}
+#Run after creating the plots. Save PNG files in the project's figures folder.
+
+```
+
