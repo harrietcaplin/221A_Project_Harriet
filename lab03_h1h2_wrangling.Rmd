@@ -95,6 +95,16 @@ summary(data[,genderviewvars])
 colSums(is.na(data[,genderviewvars]))
 
 #calculate total score; leave the total NA if any item is missing
+
+###JK: Your unreversed sum represents traditional gender-role endorsement, as your label correctly states. ###
+# You can keep that direction, but make sure your hypothesis and interpretation use the same meaning.
+# If you want higher scores to indicate gender equality instead, reverse the items before summing and update the label:
+# data[, genderviewvars] <- 8 - data[, genderviewvars]
+# Then rerun the sum and final-table steps from fresh data.
+# Your sum has a possible range of 3-21; specify that it is a sum rather than a mean in the codebook.
+# In the viewrange check below, use < 1 instead of < 0 because zero is not valid on these 1-7 items.
+###  End of comment ###
+
 data$viewtotal<- rowSums(data[,genderviewvars], na.rm=FALSE)
 summary(data$viewtotal)
 
@@ -144,6 +154,21 @@ h2data <- na.omit(data)
 
 ```{r attractiveness data}
 #group all six Attractivness variables
+
+###JK: Please reconsider combining these seven items into one score. ###
+# Attract_importance_1 measures the importance of one's own appearance on a 1-9 scale.
+# The six Important_A items measure the importance of particular appearance activities on 1-5 scales.
+# Adding them directly gives the 1-9 item a larger possible contribution and does not automatically create a validated overall measure.
+# These items concern one's own appearance, rather than attractiveness in a partner or relationship, so please align your H2 wording with the actual questions.
+# One option is to use Attract_importance_1 alone for H2; H1 already supplies the composite required by the assignment.
+# Or you can z-score all the items and combine them, which I do not super recommend.
+# If choosing the first option, replace the H2 composite-scoring and final-selection code with:
+# h2data <- data[
+#   !is.na(data$Time_social_media_1) & !is.na(data$Attract_importance_1),
+#   c("ResponseId", "Time_social_media_1", "Attract_importance_1")
+# ]
+###  End of comment ###
+
 attractvars <- c("Attract_importance_1","Important_A_diet_1", "Important_A_other_1", "Important_A_dress_1",
                     "Important_A_exercise_1", "Important_A_hair_1", "Important_A_cosm_1")
 
@@ -161,6 +186,16 @@ summary(data$attracttotal)
 sum(data$attracttotal >86 | data$attracttotal<9, na.rm= TRUE)
 
 #check that each observed allocation is between 1 and 7
+
+###JK: This range check removes valid responses of 8 and 9 on Attract_importance_1. ###
+# The general appearance item uses 1-9, while the other six items use 1-5.
+# If retaining these items, check each scale separately:
+# table(data$Attract_importance_1, useNA = "ifany")
+# summary(data[, attractvars[-1]])
+# The possible seven-item sum is 7-39, not 9-86, so update the earlier total-range check too if you retain the composite.
+# If choosing the single-item option above, remove the old composite range and selection code so it does not overwrite the new h2data.
+###  End of comment ###
+
 data$attractrange <- rowSums(
   data[,attractvars] < 0 | data[,attractvars] > 7,
   na.rm=TRUE
@@ -231,6 +266,10 @@ var_label(h1data) <- c(
 
 #add a description to each h2Data column, in column order
 #include response anchors and the commitment scoring rule
+
+###JK: Match your H2 description to the appearance variable you decide to use. ###
+
+
 var_label(h2data) <- c(
   "Unique participant ID (ResponseId)",
   "Average daily time spent using social media measured in minutes",
