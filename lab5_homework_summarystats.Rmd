@@ -1,0 +1,144 @@
+
+## 1. Load the processed data
+
+```{r load}
+# Open the project's .Rproj file before running chunks.
+# Install psych once in the Console if needed: install.packages("psych")
+install.packages("psych")
+library(psych)
+
+h1Data <- read.csv("h data/processed_data/221A_h1.csv")
+h2Data <- read.csv("h data/processed_data/221A_h2.csv")
+
+
+```
+
+## 2. Look at the distribution first
+
+```{r histogram}
+# A histogram groups numerical values into intervals (bins).
+# Bar height shows how many observations fall in each interval.
+# Start by looking at the distribution before calculating summary statistics.
+hist(h1Data$viewtotal)
+hist(h2Data$Time_social_media_1)
+hist(h2Data$attracttotal)
+
+# Add readable labels to the same histogram.
+hist(h1Data$viewtotal,
+     main="Distribution of Traditional Gender Beliefs",
+     xlab="Composite Score of Traditional Gender Beliefs 
+     (Lower score is less traditional)")
+
+hist(h2Data$attracttotal,
+     main="Distribution of Belief in Importance of Attractiveness",
+     xlab="Composite Score")
+
+hist(h2Data$Time_social_media_1,
+     main="Distribution of Social Media Usage",
+     xlab="Minutes of Social Media Use Per Week")
+
+```
+
+## 3. One statistic at a time
+
+```{r individual_statistics}
+# Mean: add the scores and divide by the number of observed responses.
+mean(h2Data$attracttotal, na.rm=TRUE)
+mean(h2Data$Time_social_media_1, na.rm=TRUE)
+mean(h1Data$viewtotal, na.rm=TRUE)
+
+# Median: the middle score after sorting the responses.
+median(h2Data$attracttotal, na.rm=TRUE)
+median(h2Data$Time_social_media_1, na.rm=TRUE)
+median(h1Data$viewtotal, na.rm=TRUE)
+
+# Table: count how many people are in each category.
+# Table is best for categorical variables
+table(h2Data$attracttotal, useNA= "ifany")
+table(h2Data$Time_social_media_1, useNA= "ifany")
+table(h1Data$viewtotal, useNA = "ifany")
+
+# Range: return the minimum and maximum, rather than their difference.
+range(h2Data$attracttotal, na.rm=TRUE)
+range(h2Data$Time_social_media_1, na.rm=TRUE)
+range(h1Data$viewtotal, na.rm=TRUE)
+
+
+# IQR: the 75th percentile minus the 25th percentile.
+#large value means data is spread out, low number means data is dense
+IQR(h2Data$attracttotal, na.rm=TRUE)
+IQR(h2Data$Time_social_media_1, na.rm=TRUE)
+IQR(h1Data$viewtotal, na.rm=TRUE)
+
+```
+
+## 4. Standardize a variable
+
+```{r standardize}
+# scale() uses z = (original score - mean) / standard deviation by default.
+# Keep the original commitment scores and store the standardized values separately.
+# scale() returns a matrix; as.numeric() makes a simple numeric column.
+(h2Data$attracttotal - mean(h2Data$attracttotal, na.rm=TRUE))/sd(h2Data$attracttotal, na.rm=TRUE)
+(h2Data$Time_social_media_1 - mean(h2Data$Time_social_media_1, na.rm=TRUE))/sd(h2Data$Time_social_media_1, na.rm=TRUE)
+(h1Data$viewtotal - mean(h1Data$viewtotal, na.rm=TRUE))/sd(h1Data$viewtotal, na.rm=TRUE)
+
+#will return a vector of z-scores
+h2Data$attracttotal_z <- scale(h2Data$attracttotal)
+h2Data$Time_social_media_z <- scale(h2Data$Time_social_media_1)
+h1Data$viewtotal_z <- scale(h1Data$viewtotal)
+
+
+# Standardized scores have mean approximately 0 and standard deviation 1. (SANITY CHECK)
+mean(h2Data$attracttotal_z, na.rm=TRUE) 
+sd(h2Data$attracttotal_z, na.rm=TRUE)
+
+mean(h2Data$Time_social_media_z, na.rm=TRUE) 
+sd(h2Data$Time_social_media_z, na.rm=TRUE)
+
+mean(h1Data$viewtotal_z, na.rm=TRUE) 
+sd(h1Data$viewtotal_z, na.rm=TRUE)
+
+```
+
+## 5. Covariance and correlation
+
+```{r association}
+# Covariance describes whether two variables tend to move together.
+# Positive: higher values tend to occur together. Negative: higher values tend to accompany lower values.
+# Its size depends on the units and is not restricted to -1 through 1.
+cov(h2Data$Time_social_media_1, h2Data$attracttotal, use ="complete.obs")
+
+# Pearson correlation expresses a linear association on a -1 to 1 scale.
+cor(h2Data$Time_social_media_1, h2Data$attracttotal, use ="complete.obs")
+
+# Select numerical variables only; do not include participant IDs or category codes. 
+corData <- h2Data[,c("Time_social_media_1","attracttotal")]
+
+# A correlation matrix gives the correlation for each pair of columns.
+# The diagonal is 1 because each variable is correlated with itself.
+cor(corData, use="complete.obs")
+
+```
+
+## 6. Several statistics at once
+
+```{r combined_summaries}
+# summary() reports minimum, quartiles, median, mean, maximum, and missing counts when present.
+summary(corData)
+
+# psych::describe() reports n, mean, SD, median, minimum, maximum, range width (max minus min), skewness, kurtosis, and other summaries.
+psych::describe(corData)
+
+# However it does not report every statistic above: compute IQR, cov(), and cor() separately.
+IQR(h2Data$attracttotal, na.rm=TRUE, type=7)
+
+IQR(h2Data$Time_social_media_1, na.rm=TRUE, type=7)
+
+IQR(h1Data$viewtotal, na.rm=TRUE, type=7)
+
+
+
+
+
+```
+
