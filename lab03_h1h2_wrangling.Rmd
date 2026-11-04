@@ -1,0 +1,269 @@
+---
+title: 'PSY221A: Data Validation and Wrangling'
+author: "Your Name"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+---
+
+H1: political alignment (categorical, IV) will impact gender equality attitudes (continuous, DV)
+
+H2: Daily social media use will be positively correlated with the evaluation of importance of attractiveness in a relationship
+
+## 1. Load the package and data
+
+```{r load, message=FALSE}
+#load the codebook package
+library(codebook)
+library(dplyr)
+
+#load data/raw/data_doctored.csv
+raw <-read.csv("data_doctored.csv")
+
+#check row and column counts, and inspect the first few rows
+dim(raw)
+head(raw)
+
+#make data with ID, sex at birth, relationship status, Attract_importance_1, qoa, and prqc_4-6; keep raw unchanged
+data <- raw[,c("ResponseId", "Time_social_media_1",
+               "Attract_importance_1", "cot_politics",
+               "Gender_Equality_1","Gender_Equality_2", "Gender_Equality_3")]
+
+
+
+
+
+
+```
+
+
+## 2. Check participant IDs
+
+```{r participant_ids}
+
+#count na
+sum(is.na(data$ResponseId))
+#count blank
+sum(data$ResponseId=="",na.rm=TRUE)
+#count duplicates
+sum(duplicated(data$ResponseId))
+#inspect records with missing or blank IDs
+missingID <- which(is.na(data$ResponseId))
+data[missingID,]
+#remove the known empty record with no ID, then check the row count
+data <- data[!is.na(data$ResponseId),]
+
+```
+
+
+## 3. Recode political views
+
+```{r cot_politics}
+# codebook: 1=far left, 2=center left, 3=center, 4=center right, 5=far right
+table(data$cot_politics,useNA="ifany")
+
+#turn cot_politics into a factor with labels FarLeft, CenterLeft, Center, CenterRight, FarRight
+data$cot_politics <- factor(data$cot_politics,
+                            levels= c(1,2,3,4,5),
+                            labels= c("Far Left","Center Left","Center","Center Right","Far Right"))
+
+table(data$cot_politics,useNA="ifany")
+
+```
+
+
+## 4. Validate views on gender
+
+```{r genderviewvars}
+#ensure Gender view data is numerical
+
+data$Gender_Equality_1 <- as.numeric(data[,"Gender_Equality_1"], na.rm = FALSE)
+data$Gender_Equality_2 <- as.numeric(data[,"Gender_Equality_2"], na.rm = FALSE)
+data$Gender_Equality_3 <- as.numeric(data[,"Gender_Equality_3"], na.rm = FALSE)
+
+#group all six Gender_equality_ variables
+genderviewvars <- c("Gender_Equality_1","Gender_Equality_2", "Gender_Equality_3")
+
+#reverse score the gender views so that higher score corresponds to less traditional
+data[, genderviewvars] <- 8 - data[, genderviewvars]
+
+#see summary of variables
+summary(data[,genderviewvars])
+
+#count NAs
+colSums(is.na(data[,genderviewvars]))
+
+#calculate total score; leave the total NA if any item is missing
+data$viewtotal<- rowSums(data[,genderviewvars], na.rm=FALSE)
+
+
+#review summary of variables with newly reversed scores
+summary(data$viewtotal)
+
+#count those that do not fall within expected sum range (3-21)
+#SPECIFY IN CODEBOOK THIS IS SUM
+sum(data$viewtotal >21 | data$viewtotal<3, na.rm= TRUE)
+
+#check that each observed allocation is between 1 and 7
+data$viewrange <- rowSums(
+  data[,genderviewvars] < 1 | data[,genderviewvars] > 7,
+  na.rm=TRUE
+) ==FALSE
+
+
+#define viewValid: total present, and each item in range
+data$viewValid <- !is.na(data$viewtotal)
+
+table(data$viewValid)
+
+#remove FALSE rows
+h1data <- filter(data, data$viewValid == TRUE & data$viewrange == TRUE)
+
+
+#make h1Data with ID, cot_politics, and genderview
+h1data <- h1data[c("ResponseId","cot_politics", "viewtotal")]
+
+#remove NA in politics column
+h1data <- na.omit(h1data)
+```
+
+
+## 5. Validating Social Media Use for H2
+```{r media use}
+#count those with minutes not  between expected range
+sum(data$Time_social_media_1 >360 | data$Time_social_media_1<0, na.rm= TRUE)
+
+#everyone is within the correct range!
+
+#remove NA reports
+data$mediaValid <- !is.na(data$Time_social_media_1)
+h2data <- na.omit(data)
+
+```
+
+## 6. Validate Importance of Attractiveness Data
+
+```{r attractiveness data}
+
+#see summary of the importance of attractiveness 
+summary(data$Attract_importance_1)
+
+#count NAs
+sum(is.na(data$Attract_importance_1))
+
+#count those that do not fall within expected sum range (1-9)
+sum(data$Attract_importance_1 >9 | data$Attract_importance_1<1, na.rm= TRUE)
+
+#define attractValid: total present, and each item in range
+data$attractvalid <- !is.na(data$Attract_importance_1)
+
+table(data$attractvalid)
+
+#remove FALSE rows
+h2data <- filter(data, data$attractvalid == TRUE)
+
+#make h2 data with relevant columns
+h2data <- h2data[c("ResponseId","Time_social_media_1", "Attract_importance_1")]
+
+
+
+
+
+```
+##7. Make h2 data fram
+```{r}
+
+#make h1Data with ID, cot_politics, and genderview
+h2data <- h2data[c("ResponseId","Time_social_media_1", "Attract_importance_1")]
+
+#remove NA in politics column
+h2data <- na.omit(h2data)
+
+```
+
+
+## 8. Check the final tables
+
+```{r final_tables}
+#check rows, columns, types, and missing values in h1Data
+#one row per participant, one column per variable
+dim(h1data)
+str(h1data)
+head(h1data)
+colSums(is.na(h1data))
+table(h1data$cot_politics,useNA="ifany")
+range(h1data$viewtotal)
+sum(duplicated(h1data$ResponseId))
+
+#do the same for h2 data
+dim(h2data)
+str(h2data)
+head(h2data)
+colSums(is.na(h2data))
+range(h2data$Time_social_media_1)
+sum(duplicated(h2data$ResponseId))
+```
+
+## 8. Add labels and generate codebooks (DO THIS TOO!!!!!!)
+
+The descriptions come from the original codebook and our scoring decisions.
+`compact_codebook()` adds summaries from the actual data. Knit the Rmd to
+display the formatted codebooks.
+
+```{r variable_labels} 
+#add a description to each h1Data column, in column order
+#include the source codes, meaning, and units
+var_label(h1data) <- c(
+  "Unique participant ID (ResponseId)",
+  "Political Alignment: original codes 1=Far Left, 2= Center Left, 3=Center, 4=Center Right, 5=Far Right; now stored as a factor",
+  "Composite score of views on gender equality, lower score corresponds to more traditional gender roles"
+)
+
+#add a description to each h2Data column, in column order
+#include response anchors and the commitment scoring rule
+var_label(h2data) <- c(
+  "Unique participant ID (ResponseId)",
+  "Average daily time spent using social media measured in minutes",
+  "Importance placed on looking attractive, composite score"
+)
+
+```
+
+H1 includes participants with an ID, a valid sex-at-birth category, and six
+allocations between 0 and 30 that total 30. Factor level numbers in the
+generated table are internal R positions, not the original survey codes.
+
+```{r h1_codebook}
+#generate the h1Data codebook
+compact_codebook(h1data)
+
+```
+
+H2 includes participants with an ID, relationship status 1, 2, or 3, and
+valid nonmissing qoa and at least one valid commitment response.
+
+```{r h2_codebook}
+#generate the h2Data codebook
+compact_codebook(h2data)
+
+```
+
+## 9. Save the final tables
+
+```{r save}
+#create data/processed_data if needed
+dir.create("data/processed_data",recursive=T,showWarnings=F)
+
+#save h1Data and h2Data without an extra row-number column
+write.csv(h1data,"data/processed_data/221A_h1.csv",row.names=F)
+write.csv(h2data,"data/processed_data/221A_h2.csv",row.names=F)
+
+#read the files back and confirm their dimensions
+h1Saved <- read.csv("data/processed_data/221A_h1.csv")
+h2Saved <- read.csv("data/processed_data/221A_h2.csv")
+dim(h1Saved)
+dim(h2Saved)
+
+```
