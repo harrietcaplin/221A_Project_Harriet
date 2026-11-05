@@ -218,7 +218,7 @@ display the formatted codebooks.
 var_label(h1data) <- c(
   "Unique participant ID (ResponseId)",
   "Political Alignment: original codes 1=Far Left, 2= Center Left, 3=Center, 4=Center Right, 5=Far Right; now stored as a factor",
-  "Composite score of views on gender equality, lower score corresponds to more traditional gender roles"
+  "Composite score (sum) of views on gender equality, higher score corresponds to more traditional gender roles"
 )
 
 #add a description to each h2Data column, in column order
@@ -226,7 +226,7 @@ var_label(h1data) <- c(
 var_label(h2data) <- c(
   "Unique participant ID (ResponseId)",
   "Average daily time spent using social media measured in minutes",
-  "Importance placed on looking attractive, composite score"
+  "Importance placed on looking attractive"
 )
 
 ```
