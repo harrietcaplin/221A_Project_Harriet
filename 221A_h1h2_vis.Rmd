@@ -1,0 +1,119 @@
+---
+title: "lab04_Practice"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+install.packages("ggrain")
+install.packages("ggplot2")
+```
+
+## Hypothesis
+
+H1: Points allocated to a partner's physical attractiveness differ by sex at birth.
+
+H2: Confidence in finding a new partner is associated with relationship commitment.
+
+```{r load package}
+
+library(ggplot2)
+library(ggrain)
+
+```
+
+## Load the processed data
+
+```{r loadData}
+#load processed data
+h1data <-read.csv("data/processed_data/221A_h1.csv")
+h2data <- read.csv("data/processed_data/221A_h2.csv")
+
+#reorganize categorical variable
+h1data$cot_politics <- factor(h1data$cot_politics,
+                           levels = c("Far Left","Center Left","Center","Center Right","Far Right"))
+#why is the above line deleting everything but center
+
+```
+
+## H1 - Box Plot
+
+```{r H1Box}
+#Box plot
+#The line is the median; the box covers the middle 50% of responses (Q1-Q3).
+#Whiskers reach the most extreme observations within 1.5 IQR of the box edges.
+h1Box <- ggplot(data=h1data,
+                aes(x=cot_politics, y=viewtotal,
+                    fill=cot_politics))+
+  geom_boxplot()+
+  labs(x="Political Alignment",
+       y="Level of Traditional Gender Views",
+       title="graph")+
+  theme_gray(base_size = 10)
+h1Box
+
+
+```
+
+## H1 - Violin Plot (with Box Plot)
+
+```{r H1Violin}
+#Violin Plot
+#Wider sections show where responses are more concentrated within each group.
+#The shape depends on smoothing; integer scores can create bumps.
+h1Viol <- ggplot(data=h1Data,
+                aes(x=Sex_birth, y=preference_imp_physat,
+                    fill=Sex_birth))+
+  labs(x="Sex assigned at birth",
+       y="Points allocated to partner physical attractiveness",
+       title="Points allocated to physical attractiveness by sex")+
+  theme_minimal(base_size = 10)+
+  geom_violin()+
+  geom_boxplot(width=.1)
+h1Viol
+
+```
+
+## H1 - Raincloud Plot
+
+```{r H1Raincloud}
+#Raincloud Plot
+#A raincloud combines a half-violin, a box plot, and individual responses.
+
+  
+```
+
+## H2 - Scatter Plots
+
+```{r H2Scatter}
+#Scatter Plot
+
+
+#Plot looks weird... why?
+
+
+#Jitter
+
+
+
+
+
+```
+
+## H2 - Smooth Line
+
+```{r}
+#Scatter Plot with line
+
+
+```
+
+## Save figures
+
+```{r saveFigures}
+#Run after creating the plots. Save PNG files in the project's figures folder.
+
+```
+
