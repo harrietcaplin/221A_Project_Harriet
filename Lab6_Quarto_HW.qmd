@@ -1,0 +1,116 @@
+---
+title: "221A Quarto Hypotheses"
+author: "Harriet Caplin"
+format:
+  html:
+    toc: true
+    code-fold: true
+execute:
+  echo: true
+---
+
+```{r}
+#| label: load-data
+#| include: false
+library(ggplot2)
+library(ggrain)
+
+h1Data <- read.csv("data/processed_data/221A_h1.csv")
+h1Data$cot_politics <- factor(h1Data$cot_politics,
+                           levels = c("Far Left", "Center Left", "Center", 
+                                      "Center Right", "Far Right"))
+h2Data <- read.csv("data/processed_data/221A_h2.csv")
+```
+
+## Hypothesis 1
+
+Will political alignment will correlate to gender equality attitudes?
+
+### Variables and descriptive statistics
+
+-   **Political Alignment (`'cot_politics'`):** A categorical variable with 5 alignment categories: Far Left, Center Left, Center, Center Left, Far Left
+-   **Gender Equality Attitudes (`'viewtotal'`):** Composite score of 3 questions reflecting gender equality attitudes on a scale from 1-7 for each question, 3-21 for the total attitude score. This item has been reverse coded so that a lower score reflects more traditional gender views and a higher score reflects more progressive ones.
+
+```{r}
+#| label: h1-descriptives
+# Count respondents in each group.
+table(h1Data$cot_politics)
+
+# Summarize attractiveness points separately for each group.
+by(h1Data$viewtotal, h1Data$cot_politics, summary)
+```
+
+### Graph
+
+@fig-attractiveness shows the distribution of points by political alignment. The half-violin shows the shape of the distribution, the box summarizes the median and quartiles, and the dots represent individual responses.
+
+```{r}
+#| label: fig-attractiveness
+#| fig-cap: "Points allocated to a partner's physical attractiveness, by sex at birth."
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot(h1Data, aes(x = cot_politics, y = viewtotal,
+                   fill = cot_politics)) +
+  geom_rain(alpha = 0.5, point.args = list(alpha = 0.04, size = 0.6)) +
+  labs(x = "Political Alignment", y = "Progressiveness of Gender Views") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+### Observed trend
+
+```{r}
+h1Data$cot_politics <- as.numeric(factor(h1Data$cot_politics, levels=c("Far Left",
+                                                                       "Center Left",
+                                                            "Center", "Center Right",
+                                                            "Far Right"), labels=c(1:5)))
+#| label: correlation
+r <- cor(h1Data$cot_politics, h1Data$viewtotal, use = "complete.obs")
+round(r, 2)
+```
+
+The correlation was `{-0.26} round(r, 2)`, indicating a weak negative association. Respondents who identified with more right-wing politics hold more traditional gender beliefs.
+
+## H2. Social Media Use and Belief in the Importance of Attractiveness
+
+Does social media use correlate with how people rate the importance of attractiveness?
+
+### Variables and descriptive statistics
+
+-   **Social Media Usage ('Time_social_media_1'):** How much time participants report spending on social media per day (minutes).
+
+-   **Importance of Attractiveness (`Attract_importance_1`):** The importance a respondent places on their own physical appearance rated on a scale from 1-9 (1 being Not At All Important and 9 being Extremely Important)
+
+```{r}
+#| label: h2-descriptives
+summary(h2Data[, c("Time_social_media_1", "Attract_importance_1")])
+```
+
+### Graph
+
+@fig-commitment shows the relationship between time spent on social media and belief in the importance of one's own attractiveness. Points are jittered to make overlapping responses easier to see; the recorded scores are unchanged. The line summarizes the linear trend.
+
+```{r}
+#| label: fig-commitment
+#| fig-cap: "Importance of Attractieness as Compared to Social Media Usage"
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot(h2Data, aes(x = Time_social_media_1, y = Attract_importance_1)) +
+  geom_jitter(width = .12, height = .04, alpha = .04, size = .6) +
+  geom_smooth(method = "lm") +
+  labs(x = "Time Spent on Social Media Per Day (minutes)",
+       y = "Importance of Attractiveness (1–9)") +
+  theme_minimal()
+```
+
+### Observed trend
+
+```{r}
+#| label: correlation
+r <- cor(h2Data$Time_social_media_1, h2Data$Attract_importance_1, use = "complete.obs")
+round(r, 2)
+```
+
+The correlation was `{0.13} round(r, 2)`, indicating a weak positive association. Respondents who reported spending more time on social media placed more importance on their attractiveness.
