@@ -33,11 +33,6 @@ data <- raw[,c("ResponseId", "Time_social_media_1",
                "cot_politics",
                "Gender_Equality_1","Gender_Equality_2", "Gender_Equality_3")]
 
-
-
-
-
-
 ```
 
 
@@ -96,7 +91,6 @@ colSums(is.na(data[,genderviewvars]))
 
 #calculate total score; leave the total NA if any item is missing
 data$viewtotal<- rowSums(data[,genderviewvars], na.rm=FALSE)
-
 
 #review summary of variables with newly reversed scores
 summary(data$viewtotal)
@@ -162,8 +156,8 @@ data$attractvalid <- !is.na(data$Attract_importance_1)
 
 #see if variables fall within expected range and if there are NAs
 data$attractvalid <- ifelse(
-  data[,3] < 1 | data[,3] > 7,
-  "Valid","Invalid")
+  data[,3] < 1 | data[,3] > 9,
+  "Invalid","Valid")
 
 table(data$attractvalid)
 
