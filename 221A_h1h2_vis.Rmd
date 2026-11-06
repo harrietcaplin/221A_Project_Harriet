@@ -11,6 +11,7 @@ install.packages("ggrain")
 install.packages("ggplot2")
 ```
 
+
 ## Hypothesis
 
 H1: Points allocated to a partner's physical attractiveness differ by sex at birth.
@@ -38,66 +39,35 @@ h1data$cot_politics <- factor(h1data$cot_politics,
 
 ```
 
-## H1 - Box Plot
-
-```{r H1Box}
-#Box plot
-#The line is the median; the box covers the middle 50% of responses (Q1-Q3).
-#Whiskers reach the most extreme observations within 1.5 IQR of the box edges.
-h1Box <- ggplot(data=h1data,
-                aes(x=cot_politics, y=viewtotal,
-                    fill=cot_politics))+
-  geom_boxplot()+
-  labs(x="Political Alignment",
-       y="Level of Traditional Gender Views",
-       title="graph")+
-  theme_gray(base_size = 10)
-h1Box
-
-
-```
-
 ## H1 - Violin Plot (with Box Plot)
 
 ```{r H1Violin}
 #Violin Plot
 #Wider sections show where responses are more concentrated within each group.
 #The shape depends on smoothing; integer scores can create bumps.
-h1Viol <- ggplot(data=h1Data,
-                aes(x=Sex_birth, y=preference_imp_physat,
-                    fill=Sex_birth))+
-  labs(x="Sex assigned at birth",
-       y="Points allocated to partner physical attractiveness",
-       title="Points allocated to physical attractiveness by sex")+
-  theme_minimal(base_size = 10)+
-  geom_violin()+
-  geom_boxplot(width=.1)
-h1Viol
+h1viol <- ggplot(data=h1data,
+                aes(x=cot_politics, y=viewtotal,
+                    fill=cot_politics))+
+  geom_violin(width=1)+
+  geom_boxplot(width=.05)+
+  labs(x="Political Alignment",
+       y="Level of Traditional Gender Views",
+       title="Progressiveness of Gender Views by Political Alignment")+
+  theme_gray(base_size = 10)
+h1viol
 
 ```
 
-## H1 - Raincloud Plot
-
-```{r H1Raincloud}
-#Raincloud Plot
-#A raincloud combines a half-violin, a box plot, and individual responses.
-
-  
-```
 
 ## H2 - Scatter Plots
 
 ```{r H2Scatter}
 #Scatter Plot
-
-
-#Plot looks weird... why?
-
-
-#Jitter
-
-
-
+h2points <- ggplot(data=h2data, aes(x=Time_social_media_1, y=Attract_importance_1))+
+  geom_jitter(alpha=0.1,color="pink")+
+  labs(x="Time spent on social media (minutes/day)", y="Reported Importance of Attractiveness",
+       title="Importance Placed on Attractiveness Across Social Media Usage Levels")+
+  theme_gray(base_size=12)
 
 
 ```
@@ -106,7 +76,8 @@ h1Viol
 
 ```{r}
 #Scatter Plot with line
-
+h2line <- h2points +geom_smooth(method="lm")
+h2line
 
 ```
 
@@ -114,6 +85,8 @@ h1Viol
 
 ```{r saveFigures}
 #Run after creating the plots. Save PNG files in the project's figures folder.
+dir.create("figures",showWarnings=FALSE)
+ggsave("figures/h1_violin.png",plot=h1viol,width=10,height=6,dpi=300)
+ggsave("figures/h2_scatterr.png",plot=h2line,width=10,height=6,dpi=300)
 
-```
 
