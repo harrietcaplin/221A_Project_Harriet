@@ -7,6 +7,11 @@
 install.packages("psych")
 library(psych)
 
+###JK: Remove "h " from the beginning of both data paths. ###
+# h1Data <- read.csv("data/processed_data/221A_h1.csv")
+# h2Data <- read.csv("data/processed_data/221A_h2.csv")
+###  End of comment ###
+
 h1Data <- read.csv("h data/processed_data/221A_h1.csv")
 h2Data <- read.csv("h data/processed_data/221A_h2.csv")
 
@@ -24,6 +29,12 @@ hist(h2Data$Time_social_media_1)
 hist(h2Data$attracttotal)
 
 # Add readable labels to the same histogram.
+
+###JK: Correct the score-direction and time-unit labels. ###
+# Your wrangling script reverse-codes the gender items, so higher viewtotal means more gender equality and less traditional views. Lower scores mean more traditional views.
+# Time_social_media_1 is minutes per day, so change "Per Week" to "Per Day" in its histogram label.
+###  End of comment ###
+
 hist(h1Data$viewtotal,
      main="Distribution of Traditional Gender Beliefs",
      xlab="Composite Score of Traditional Gender Beliefs 
