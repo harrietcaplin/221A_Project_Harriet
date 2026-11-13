@@ -14,6 +14,8 @@ install.packages("ggplot2")
 
 ## Hypothesis
 
+###JK: Update the two hypotheses to your own questions. ###
+
 H1: Points allocated to a partner's physical attractiveness differ by sex at birth.
 
 H2: Confidence in finding a new partner is associated with relationship commitment.
@@ -63,6 +65,12 @@ h1viol
 
 ```{r H2Scatter}
 #Scatter Plot
+
+###JK: Use the appearance variable that is actually in your H2 CSV. ###
+# Your current CSV contains attracttotal, not Attract_importance_1, so the graph stops when it tries to find the y variable.
+# To plot the current composite, use aes(x = Time_social_media_1, y = attracttotal) and label y as "Appearance-importance composite score".
+###  End of comment ###
+
 h2points <- ggplot(data=h2data, aes(x=Time_social_media_1, y=Attract_importance_1))+
   geom_jitter(alpha=0.1,color="pink")+
   labs(x="Time spent on social media (minutes/day)", y="Reported Importance of Attractiveness",
