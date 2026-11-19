@@ -41,6 +41,11 @@ table(h1Data$cot_politics)
 by(h1Data$viewtotal, h1Data$cot_politics, summary)
 ```
 
+###JK: Update the H1 caption and category description to match this graph. ###
+# Use a caption such as "Gender equality attitude scores by political alignment" in the H1 fig-cap line.
+# The five categories in the description should be Far Left, Center Left, Center, Center Right, and Far Right.
+###  End of comment ###
+
 ### Graph
 
 @fig-attractiveness shows the distribution of points by political alignment. The half-violin shows the shape of the distribution, the box summarizes the median and quartiles, and the dots represent individual responses.
@@ -58,6 +63,10 @@ ggplot(h1Data, aes(x = cot_politics, y = viewtotal,
   theme_minimal() +
   theme(legend.position = "none")
 ```
+
+###JK: Use the R inline-code syntax for both correlation values in the report text. ###
+# Write `{r} round(r, 2)` between backticks. The current `{-0.26}` and `{0.13}` forms display literal text instead of inserting the calculated correlation.
+###  End of comment ###
 
 ### Observed trend
 
