@@ -1,0 +1,80 @@
+---
+title: "PSY221A: Correlation, t-test, and ANOVA"
+output: html_document
+---
+
+## 1. Load the processed data
+
+```{r load}
+# Open the project's .Rproj file before running chunks.
+h1data <- read.csv("data/processed_data/221A_h1.csv")
+h2data <- read.csv("data/processed_data/221A_h2.csv")
+
+
+# Check the variable types, missing values, and group sizes.
+str(h1data)
+str(h2data)
+table(h1data$cot_politics, useNA = "ifany")
+```
+
+## 2. H2: Correlation
+
+```{r correlation}
+# cor() gives the correlation coefficient
+cor(h2data$Time_social_media_1, h2data$Attract_importance_1)
+
+# cor.test() gives a hypothesis test and a confidence interval.
+# The default is a two-sided Pearson correlation test.
+# The null hypothesis is that the population correlation is zero.
+cor.test(h2data$Time_social_media_1, h2data$Attract_importance_1)
+
+# The 95% confidence interval describes uncertainty about the population correlation.
+```
+
+## 3. H1: Independent-samples t-test
+
+```{r t_test}
+# For t-test, we will compare far right and far left politics to see extreme differences
+# Keep the original h1Data unchanged.
+h1data$cot_politics <- factor(h1data$cot_politics,
+                              levels=c("Far Left","Center Left", "Center",
+                                       "Center Right", "Far Right"))
+h1test <- h1data[h1data$cot_politics %in% c("Far Left", "Far Right"),]
+
+# Check the groups and their descriptive statistics before testing.
+table(h1test$cot_politics)
+by(h1test$viewtotal, h1test$cot_politics, mean)
+
+
+# The null hypothesis is that the two population means are equal.
+# Conduct independent sample t-test
+t.test(viewtotal ~ cot_politics, data=h1test)
+
+# Read the group means to see which group allocated more points on average.
+# t is the test statistic, df is the degrees of freedom, and p-value evaluates the null hypothesis.
+```
+
+## 4. H1: One-way ANOVA
+
+```{r anova}
+# Return to h1Data to compare Male, Female, and Intersex respondents.
+by(h1data$viewtotal, h1data$cot_politics, mean)
+
+# The null hypothesis is that all three population means are equal.
+# Save the ANOVA model, then use summary() to display the ANOVA table.
+h1anova <- aov(viewtotal ~ cot_politics, data=h1data)
+summary(h1anova)
+
+# A significant result indicates that at least ONE population mean differs.
+```
+
+## 5. Which groups differ?
+
+```{r post_hoc}
+# After ANOVA, Tukey's test compares each pair of groups while adjusting for multiple comparisons.
+TukeyHSD(h1anova)
+
+
+# diff is the first named group's mean minus the second named group's mean in each comparison label.
+# lwr and upr are the confidence limits; p adj is the adjusted p-value.
+```
