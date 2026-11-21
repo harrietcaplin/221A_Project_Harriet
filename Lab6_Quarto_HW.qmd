@@ -10,6 +10,10 @@ execute:
   echo: true
 ---
 
+###JK: Good work! I made a few small corrections below. ###
+# I corrected the political alignment categories (line 36) and H1 caption (line 55) to match your variables, and fixed both inline R expressions (lines 80 and 123) so the calculated correlations appear in the report.
+###  End of comment ###
+
 ```{r}
 #| label: load-data
 #| include: false
@@ -29,7 +33,7 @@ Will political alignment will correlate to gender equality attitudes?
 
 ### Variables and descriptive statistics
 
--   **Political Alignment (`'cot_politics'`):** A categorical variable with 5 alignment categories: Far Left, Center Left, Center, Center Left, Far Left
+-   **Political Alignment (`'cot_politics'`):** A categorical variable with 5 alignment categories: Far Left, Center Left, Center, Center Right, Far Right
 -   **Gender Equality Attitudes (`'viewtotal'`):** Composite score of 3 questions reflecting gender equality attitudes on a scale from 1-7 for each question, 3-21 for the total attitude score. This item has been reverse coded so that a lower score reflects more traditional gender views and a higher score reflects more progressive ones.
 
 ```{r}
@@ -41,13 +45,14 @@ table(h1Data$cot_politics)
 by(h1Data$viewtotal, h1Data$cot_politics, summary)
 ```
 
+
 ### Graph
 
 @fig-attractiveness shows the distribution of points by political alignment. The half-violin shows the shape of the distribution, the box summarizes the median and quartiles, and the dots represent individual responses.
 
 ```{r}
 #| label: fig-attractiveness
-#| fig-cap: "Points allocated to a partner's physical attractiveness, by sex at birth."
+#| fig-cap: "Gender equality attitude scores by political alignment."
 #| fig-width: 8
 #| fig-height: 5
 
@@ -58,6 +63,7 @@ ggplot(h1Data, aes(x = cot_politics, y = viewtotal,
   theme_minimal() +
   theme(legend.position = "none")
 ```
+
 
 ### Observed trend
 
@@ -71,7 +77,7 @@ r <- cor(h1Data$cot_politics, h1Data$viewtotal, use = "complete.obs")
 round(r, 2)
 ```
 
-The correlation was `{-0.26} round(r, 2)`, indicating a weak negative association. Respondents who identified with more right-wing politics hold more traditional gender beliefs.
+The correlation was `{r} round(r, 2)`, indicating a weak negative association. Respondents who identified with more right-wing politics hold more traditional gender beliefs.
 
 ## H2. Social Media Use and Belief in the Importance of Attractiveness
 
@@ -114,4 +120,4 @@ r <- cor(h2Data$Time_social_media_1, h2Data$Attract_importance_1, use = "complet
 round(r, 2)
 ```
 
-The correlation was `{0.13} round(r, 2)`, indicating a weak positive association. Respondents who reported spending more time on social media placed more importance on their attractiveness.
+The correlation was `{r} round(r, 2)`, indicating a weak positive association. Respondents who reported spending more time on social media placed more importance on their attractiveness.
